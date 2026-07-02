@@ -40,3 +40,13 @@ class TestHTMLNode(unittest.TestCase):
             parent_node.to_html(),
             "<div><span><b>grandchild</b></span></div>",
         )
+
+    def test_parent_node_multiple(self):
+        grandchild_node = LeafNode("b", "child of child_node1")
+        child_node1 = ParentNode("span", [grandchild_node])
+        child_node2 = LeafNode("p", "child_node2, a paragraph")
+        parent_node = ParentNode("section", [child_node1, child_node2])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<section><span><b>child of child_node1</b></span><p>child_node2, a paragraph</p></section>"
+        )
