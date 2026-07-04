@@ -1,5 +1,6 @@
 import unittest
 from textnode import *
+from funcs import *
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -71,6 +72,83 @@ class TestTextNode(unittest.TestCase):
                 "alt": "This is an image text node"
                 }
             )
+
+    def test_split_bold(self):
+        node1 = TextNode("This is a text node with **bold text** in it.", TextType.PLAIN_TEXT)
+        self.assertEqual(split_nodes_delimiter([node1], "**", TextType.BOLD_TEXT), 
+                    [
+                        TextNode("This is a text node with ", TextType.PLAIN_TEXT),
+                        TextNode("bold text", TextType.BOLD_TEXT),
+                        TextNode(" in it.", TextType.PLAIN_TEXT)
+                    ]
+                    )
+
+    def test_split_italics(self):
+        node1 = TextNode("This is a text node with _italic text_ in it.", TextType.PLAIN_TEXT)
+        self.assertEqual(split_nodes_delimiter([node1], "_", TextType.ITALIC_TEXT),
+                         [
+                            TextNode("This is a text node with ", TextType.PLAIN_TEXT),
+                            TextNode("italic text", TextType.ITALIC_TEXT),
+                            TextNode(" in it.", TextType.PLAIN_TEXT)
+                         ]
+                         )
+
+    def test_split_code(self):
+        node1 = TextNode("This is a text node with `code text` in it.", TextType.PLAIN_TEXT)
+        self.assertEqual(split_nodes_delimiter([node1], "`", TextType.CODE_TEXT),
+                        [
+                            TextNode("This is a text node with ", TextType.PLAIN_TEXT),
+                            TextNode("code text", TextType.CODE_TEXT),
+                            TextNode(" in it.", TextType.PLAIN_TEXT)
+                        ]
+                        )
+
+    def test_split_start_with_delimiter(self):
+        node1 = TextNode(
+            "_This_ is a text node with italic text in it.", TextType.PLAIN_TEXT
+                        )
+        self.assertEqual(split_nodes_delimiter(
+            [node1], "_",
+            TextType.ITALIC_TEXT
+            ),
+            [
+                TextNode("This", TextType.ITALIC_TEXT),TextNode(
+                    " is a text node with italic text in it.",
+                    TextType.PLAIN_TEXT
+                    )
+            ]
+            )
+
+    def test_split_end_with_delimiter(self):
+        node1 = TextNode(
+            "This is a text node with bold text in **it.**", TextType.PLAIN_TEXT
+            )
+        self.assertEqual(split_nodes_delimiter([node1], "**", TextType.BOLD_TEXT),
+                        [
+                            TextNode(
+                                "This is a text node with bold text in ",
+                                TextType.PLAIN_TEXT
+                                ),
+                            TextNode("it.", TextType.BOLD_TEXT)
+                        ]
+            )
+        
+    def test_split_no_delimiters(self):
+        node1 = TextNode("This is a text node with italic text in it.", TextType.PLAIN_TEXT)
+        self.assertEqual(split_nodes_delimiter([node1], "_", TextType.ITALIC_TEXT),
+                        [
+                            TextNode("This is a text node with italic text in it.", TextType.PLAIN_TEXT)
+                        ]
+                        )
+
+    def test_split_multiple_plaintext_nodes(self):
+        pass
+
+    def test_split_mixed_nodes(self):
+        pass
+
+    def test_split_multiple_node_type(self):
+        pass
 
 
 if __name__ == "__main__":
